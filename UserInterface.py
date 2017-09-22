@@ -1,160 +1,148 @@
-#!/usr/bin/env python
-# coding:utf-8
-
-import wx
-from FileSearching import FileSearching
-from ImgIntegrating import ImageHandler
+# -*- coding:cp936 -*-
+from Tkinter import *
+import tkFileDialog
+import tkMessageBox
 from Preprocessor import Preprocessor
 
-class UserInterface(wx.Frame):
-    """"""
+class UserInterface:
 
-    # ----------------------------------------------------------------------
     def __init__(self):
-        """Constructor"""
-        wx.Frame.__init__(self, None, -1, u"å›¾ç‰‡åˆæˆ", size=(500, 500))
-        self.panel = wx.Panel(self, -1)
-    #     self.initWidgets(self.panel)
-    #
-    # def initWidgets(self, panel):
-        sizer = wx.GridBagSizer(0, 0)
 
-        label_no1 = wx.StaticText(self.panel, -1, u"ç¬¬1å¼ å›¾ç‰‡å…³é”®å­—ï¼š")
-        sizer.Add(label_no1, pos=(1, 0), flag=wx.ALL, border=5)
-        self.text_no1 = wx.TextCtrl(self.panel, -1, "bgh", size=(175, -1))
-        sizer.Add(self.text_no1, pos=(1, 1), flag=wx.ALL, border=5)
+        self.root = Tk()
+        self.root.title("Í¼Æ¬ºÏ³É".decode('gbk').encode('utf8'))
+        # self.root.geometry('470x320')
+        ########
+        self.frm = Frame(self.root)
+        # Top
+        Label(self.root, text=" ".decode('gbk').encode('utf8'), font=('Arial', 15)).pack()
+        self.frm = Frame(self.root)
+        # Left
+        self.frm_L = Frame(self.frm)
+        self.frm_L1 = Frame(self.frm_L)
+        self.frm_L2 = Frame(self.frm_L)
+        self.frm_L3 = Frame(self.frm_L)
+        self.frm_L4 = Frame(self.frm_L)
 
-        label_no2 = wx.StaticText(self.panel, -1, u"ç¬¬2å¼ å›¾ç‰‡å…³é”®å­—ï¼š")
-        sizer.Add(label_no2, pos=(2, 0), flag=wx.ALL, border=5)
-        self.text_no2 = wx.TextCtrl(self.panel, -1, "sfz_f", size=(175, -1))
-        sizer.Add(self.text_no2, pos=(2, 1), flag=wx.ALL, border=5)
+        self.var_char1 = StringVar()
+        self.var_char2 = StringVar()
+        self.var_char3 = StringVar()
+        self.var_char4 = StringVar()
 
-        label_no3 = wx.StaticText(self.panel, -1, u"ç¬¬3å¼ å›¾ç‰‡å…³é”®å­—ï¼š")
-        sizer.Add(label_no3, pos=(3, 0), flag=wx.ALL, border=5)
-        self.text_no3 = wx.TextCtrl(self.panel, -1, "sfz_b", size=(175, -1))
-        sizer.Add(self.text_no3, pos=(3, 1), flag=wx.ALL, border=5)
+        self.var_char1.set("bgh")
+        self.var_char2.set("sfz_f")
+        self.var_char3.set("sfz_b")
+        self.var_char4.set("ddh")
 
-        label_no4 = wx.StaticText(self.panel, -1, u"ç¬¬4å¼ å›¾ç‰‡å…³é”®å­—ï¼š")
-        sizer.Add(label_no4, pos=(4, 0), flag=wx.ALL, border=5)
-        self.text_no4 = wx.TextCtrl(self.panel, -1, "ddh", size=(175, -1))
-        sizer.Add(self.text_no4, pos=(4, 1), flag=wx.ALL, border=5)
+        Label(self.frm_L1, text='ÇëÊäÈëµÚ1ÕÅÍ¼Æ¬µÄ¹Ø¼ü×Ö£º'.decode('gbk').encode('utf8'), font=('Arial', 12)).pack(side=LEFT)
+        Entry(self.frm_L1, textvariable=self.var_char1, width=15, font=('Verdana', 15)).pack(side=RIGHT)
+        self.frm_L1.pack()
+        Label(self.frm_L2, text='ÇëÊäÈëµÚ2ÕÅÍ¼Æ¬µÄ¹Ø¼ü×Ö£º'.decode('gbk').encode('utf8'), font=('Arial', 12)).pack(side=LEFT)
+        Entry(self.frm_L2, textvariable=self.var_char2, width=15, font=('Verdana', 15)).pack(side=RIGHT)
+        self.frm_L2.pack()
+        Label(self.frm_L3, text='ÇëÊäÈëµÚ3ÕÅÍ¼Æ¬µÄ¹Ø¼ü×Ö£º'.decode('gbk').encode('utf8'), font=('Arial', 12)).pack(side=LEFT)
+        Entry(self.frm_L3, textvariable=self.var_char3, width=15, font=('Verdana', 15)).pack(side=RIGHT)
+        self.frm_L3.pack()
+        Label(self.frm_L4, text='ÇëÊäÈëµÚ4ÕÅÍ¼Æ¬µÄ¹Ø¼ü×Ö£º'.decode('gbk').encode('utf8'), font=('Arial', 12)).pack(side=LEFT)
+        Entry(self.frm_L4, textvariable=self.var_char4, width=15, font=('Verdana', 15)).pack(side=RIGHT)
+        self.frm_L4.pack()
 
-        label_file_in_button = wx.StaticText(self.panel, -1, u"é€‰æ‹©å›¾ç‰‡è¾“å…¥æ–‡ä»¶å¤¹ï¼š")
-        sizer.Add(label_file_in_button, pos=(5, 0), flag=wx.ALL, border=5)
-        file_in_button = wx.Button(self, -1, u"æ–‡ä»¶å¤¹é€‰æ‹©")
-        self.Bind(wx.EVT_BUTTON, self.on_dir_input_button, file_in_button)
-        sizer.Add(file_in_button, pos=(5, 1), flag=wx.ALL, border=5)
+        self.frm_L.pack(side=TOP)
 
-        label_dir_in = wx.StaticText(self.panel, -1, u"å›¾ç‰‡è¾“å…¥æ–‡ä»¶å¤¹è·¯å¾„ï¼š")
-        sizer.Add(label_dir_in, pos=(6, 0), flag=wx.ALL, border=5)
-        self.label_dir_input = wx.StaticText(self.panel, -1, " ........"+("          ")*10)
-        self.label_dir_input.Hide()
-        sizer.Add(self.label_dir_input, pos=(6, 1), flag=wx.FULLSCREEN_ALL, border=5)
+        # Middle
+        self.frm_M = Frame(self.frm)
+        self.frm_M1 = Frame(self.frm_M)
+        self.frm_M2 = Frame(self.frm_M)
+        self.frm_M3 = Frame(self.frm_M)
+        self.frm_M4 = Frame(self.frm_M)
 
-        label_file_out_button = wx.StaticText(self.panel, -1, u"é€‰æ‹©å›¾ç‰‡è¾“å‡ºæ–‡ä»¶å¤¹ï¼š")
-        sizer.Add(label_file_out_button, pos=(7, 0), flag=wx.ALL, border=5)
-        file_out_button = wx.Button(self, -1, u"æ–‡ä»¶å¤¹é€‰æ‹©")
-        self.Bind(wx.EVT_BUTTON, self.on_dir_output_button, file_out_button)
-        sizer.Add(file_out_button, pos=(7, 1), flag=wx.ALL, border=5)
+        Label(self.frm_M1, text='ÊäÈëÂ·¾¶:'.decode('gbk').encode('utf8'), font=('Arial', 12)).pack(side=LEFT)
+        self.text_input_path = StringVar()
+        Label(self.frm_M1, textvariable=self.text_input_path, font=('Arial', 12)).pack(side=RIGHT)
+        self.frm_M1.pack()
 
-        label_dir_out = wx.StaticText(self.panel, -1, u"å›¾ç‰‡è¾“å‡ºæ–‡ä»¶å¤¹è·¯å¾„ï¼š")
-        sizer.Add(label_dir_out, pos=(8, 0), flag=wx.ALL, border=5)
-        self.label_dir_output = wx.StaticText(self.panel, -1, " ........"+("          ")*10)
-        self.label_dir_output.Hide()
-        sizer.Add(self.label_dir_output, pos=(8, 1), flag=wx.FULLSCREEN_ALL, border=5)
+        Button(self.frm_M2, text="Ñ¡Ôñ".decode('gbk').encode('utf-8'), command=self.input_button_click, width=15, height=3,
+               font=('Arial', 10)).pack(side=LEFT)
+        self.frm_M2.pack()
 
-        self.label_image_group_number_all = wx.StaticText(self.panel, -1)
-        sizer.Add(self.label_image_group_number_all, pos=(9, 0), flag=wx.ALL, border=5)
-        self.label_image_group_number_integrated = wx.StaticText(self.panel, -1)
-        sizer.Add(self.label_image_group_number_integrated, pos=(9, 1), flag=wx.ALL, border=5)
+        Label(self.frm_M3, text='Êä³öÂ·¾¶:'.decode('gbk').encode('utf8'), font=('Arial', 12)).pack(side=LEFT)
+        self.text_output_path = StringVar()
+        Label(self.frm_M3, textvariable=self.text_output_path, font=('Arial', 12)).pack(side=RIGHT)
+        self.frm_M3.pack()
 
-        self.integrate_button = wx.Button(self, -1, u"å¼€å§‹åˆæˆ")
-        self.Bind(wx.EVT_BUTTON, self.on_integrate_button, self.integrate_button)
-        sizer.Add(self.integrate_button, pos=(10, 1), flag=wx.ALL, border=5)
+        Button(self.frm_M4, text="Ñ¡Ôñ".decode('gbk').encode('utf-8'), command=self.output_button_click, width=15, height=3,
+               font=('Arial', 10)).pack(side=LEFT)
+        self.frm_M4.pack()
 
-        self.panel.SetSizerAndFit(sizer)
-        self.Show()
+        self.frm_M.pack()
 
-        self.tag_input_path = False
-        self.tag_output_path = False
+        # Bottom
+        self.frm_B = Frame(self.frm)
+        self.frm_BT = Frame(self.frm_B)
 
-    # ----------------------------------------------------------------------
-    def on_dir_input_button(self, event):
-        """"""
-        dlg = wx.DirDialog(self, u"é€‰æ‹©è¾“å…¥æ–‡ä»¶å¤¹", style=wx.DD_DEFAULT_STYLE)
-        if dlg.ShowModal() == wx.ID_OK:
-            dir_path = dlg.GetPath()  # file path
-            self.label_dir_input.Show()
-            self.label_dir_input.SetLabel(dir_path)
-            self.tag_input_path = True
+        self.img_group_number = StringVar()
+        Label(self.frm_B, textvariable=self.img_group_number, font=('Arial', 15)).pack(side=TOP)
+        Button(self.frm_BT, text="¿ªÊ¼ºÏ³É".decode('gbk').encode('utf-8'), command=self.integrate_images, width=10, height=3,
+               font=('Arial', 15)).pack(side=BOTTOM)
+        self.frm_BT.pack(side=TOP)
 
-        dlg.Destroy()
+        self.t_show = Text(self.frm_B, width=20, height=5, font=('Verdana', 15))
+        self.t_show.pack()
 
-    def on_dir_output_button(self, event):
-        """"""
-        dlg = wx.DirDialog(self, u"é€‰æ‹©è¾“å‡ºæ–‡ä»¶å¤¹", style=wx.DD_DEFAULT_STYLE)
-        if dlg.ShowModal() == wx.ID_OK:
-            dir_path = dlg.GetPath()  # file path
-            self.label_dir_output.Show()
-            self.label_dir_output.SetLabel(dir_path)
-            self.tag_output_path = True
+        self.frm_B.pack(side=BOTTOM)
 
-        dlg.Destroy()
+        self.frm.pack()
+        ########
 
-    def set_img_group_number_all(self, number_all):
-        self.label_image_group_number_all.SetLabel(u"å›¾ç‰‡ç»„æ•°é‡ï¼š"+ str(number_all))
+    def input_button_click(self):
+        filename = tkFileDialog.askdirectory()
+        print filename
+        self.text_input_path.set(filename)
 
-    def set_img_group_number_integrated(self, number_integrated):
-        self.label_image_group_number_integrated.SetLabel(u"å¾…å¤„ç†å›¾ç‰‡ç»„æ•°é‡ï¼š"+ str(number_integrated))
-
-    # def get_dir_path(self):
-    #     dir_path = str(self.label_dir_output.GetLabel())
-    #     return dir_path
-
-###############################################################################
+    def output_button_click(self):
+        filename = tkFileDialog.askdirectory()
+        self.text_output_path.set(filename)
 
     def judge_user_input_or_not(self):
+        alert_message = StringVar()
+        if len(self.var_char1.get()) == 0 or len(self.var_char2.get()) == 0 \
+                or len(self.var_char3.get()) == 0 or len(self.var_char4.get()) == 0:
+            alert_message.set(u"ÇëÊäÈëÍ¼Æ¬¹Ø¼ü×Ö!\n")
 
-        if self.text_no1.GetValue() is None or self.text_no2.GetValue() is None \
-                or self.text_no3.GetValue() is None or self.text_no4.GetValue() is None:
-            self.label_dir_input.SetLabel(u"æ–‡ä»¶å…³é”®å­—ä¸èƒ½ä¸ºç©º" + ("          ") * 5)
-            self.label_dir_input.Show()
+        if len(self.text_input_path.get()) == 0:
+            alert_message.set(alert_message.get() + u"ÇëÑ¡ÔñÍ¼Æ¬ÊäÈëÂ·¾¶!\n")
 
-        if not self.tag_input_path:
-            self.label_dir_input.SetLabel(u"è¯·é€‰æ‹©å›¾ç‰‡è¾“å…¥æ–‡ä»¶å¤¹"+("          ")*5)
-            self.label_dir_input.Show()
-            return
+        if len(self.text_output_path.get()) == 0:
+            alert_message.set(alert_message.get() + u"ÇëÑ¡ÔñÍ¼Æ¬Êä³öÂ·¾¶!\n")
 
-        if not self.tag_output_path:
-            self.label_dir_output.SetLabel(u"è¯·é€‰æ‹©å›¾ç‰‡è¾“å…¥æ–‡ä»¶å¤¹"+("          ")*5)
-            self.label_dir_output.Show()
-            return
+        if len(alert_message.get()):
+            tkMessageBox.showwarning(u"¾¯¸æ", alert_message.get())
 
-    def on_integrate_button(self, event):
-        '''-----------------------integrating starts---------------------'''
-        event.Skip()
+    def integrate_images(self):
 
         self.judge_user_input_or_not()
 
         image_type_list = list()
-        image_type_list.append(self.text_no1.GetValue())
-        image_type_list.append(self.text_no2.GetValue())
-        image_type_list.append(self.text_no3.GetValue())
-        image_type_list.append(self.text_no4.GetValue())
+        image_type_list.append(self.var_char1.get())
+        image_type_list.append(self.var_char2.get())
+        image_type_list.append(self.var_char3.get())
+        image_type_list.append(self.var_char4.get())
 
         print image_type_list
-        integrate_handler = Preprocessor(self.label_dir_input.GetLabel(), self.label_dir_output.GetLabel(),
+        integrate_handler = Preprocessor(self.text_input_path.get(), self.text_output_path.get(),
                                          image_type_list)
 
         group_number = integrate_handler.get_group_number_all()
+        self.img_group_number.set(u"¹²ÓĞ"+str(group_number)+u"×éÍ¼Æ¬")
         integrated_number = 0
-        self.set_img_group_number_all(group_number)
 
         keyword_dict = integrate_handler.get_keyword_dict()
         for k, v in keyword_dict.iteritems():
             if integrate_handler.integrate_images(k):
-                integrated_number = integrated_number + 1
-                self.set_img_group_number_integrated(group_number - integrated_number)
+                integrated_number += 1
+                self.t_show.insert(END, u"ÒÑÍê³ÉµÚ"+str(integrated_number)+u"×é\n")
 
 
+# if __name__ == "__main__":
+#     d = UserInterface()
+#     mainloop()
 
