@@ -12,7 +12,6 @@ class Preprocessor:
 
     def integrate_images(self, keyword):
         image_handle = ImageHandler(self.image_type_list, keyword)
-        image_handle.init_image_type_dict()
         return image_handle.image_integrating(self.input_file_path, self.output_file_path, str(keyword)+"_final.jpg")
 
     def get_group_number_all(self):

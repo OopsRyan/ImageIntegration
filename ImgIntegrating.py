@@ -11,12 +11,6 @@ class ImageHandler:
         self.keyword = keyword
         self.image_type_dict = dict()
         self.delta = 100  # border
-    # init the image dictionary which contains four types of photos
-    def init_image_type_dict(self):
-        self.image_type_dict.setdefault("bgh", ImageFile("bgh", (0, 0), (1080, 1920)))       # express number
-        self.image_type_dict.setdefault("sfz_f", ImageFile("sfz_f", (1080, 0), (1706, 960)))     # the front image of ID card
-        self.image_type_dict.setdefault("sfz_b", ImageFile("sfz_b", (1080, 960), (1706, 960)))     # the back image of ID card
-        self.image_type_dict.setdefault("ddh", ImageFile("sfz_f", (2786, 0), (1080, 1920)))       # transaction number
 
     def image_resize(self, img, size):
         """resize the img"""
@@ -34,47 +28,48 @@ class ImageHandler:
         canvas_width = 0
         canvas_height = 0
         mid_width = 0
-        # calculating the max height of the final image
-        for image_type in self.image_type_list:
-            img_path = input_path + '/' + self.keyword + "_"+image_type+".jpg"
-            if os.path.exists(img_path):
-                image = Image.open(img_path)
-                width, height = image.size
-                if image_type == self.image_type_list[0]:
-                    canvas_height = height
-                    canvas_width += width
-                elif image_type == self.image_type_list[1] or image_type == self.image_type_list[2]:
-                    if mid_width < width:
-                        mid_width = width
-                elif image_type == self.image_type_list[3]:
-                    canvas_width += width
-        canvas_width += mid_width
+
+        final_width_img0 = 420.0
+        final_width_img1 = 480.0
+        final_width_img3 = 420.0
+        # final_height_img3 = 60
 
         # creating a new image
         # new_img = Image.new('RGB', (total_width, max_height), 255)
-        new_img = Image.new('RGB', (canvas_width + self.delta, canvas_height), (255,255,255))
 
         # integrating the images
-        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[0] + ".jpg"
-        img = Image.open(img_path)
-        w0, h0 = img.size
-        new_img.paste(img, (0, 0))
+        img_path = input_path + os.sep + self.keyword + "_" + self.image_type_list[0] + ".jpg"
+        img0 = Image.open(img_path)
+        w0, h0 = img0.size
+        canvas_width += w0
 
-        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[1] + ".jpg"
-        img = Image.open(img_path)
-        w1, h1 = img.size
-        new_img.paste(img, (w0, 0))
+        img_path = input_path + os.sep + self.keyword + "_" + self.image_type_list[1] + ".jpg"
+        img1 = Image.open(img_path)
+        w1, h1 = img1.size
+        ratio1 = 600/final_width_img1
+        img1 = self.image_resize(img1, size=(int(final_width_img1), int(h1*0.5/ratio1)))
 
-        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[2] + ".jpg"
-        img = Image.open(img_path)
-        w2, h2 = img.size
-        new_img.paste(img, (w0, h1))
+        img_path = input_path + os.sep + self.keyword + "_" + self.image_type_list[2] + ".jpg"
+        img2 = Image.open(img_path)
+        w2, h2 = img2.size
+        # ratio = int(600/480)
+        img2 = self.image_resize(img2, size=(int(final_width_img1), int(h2*0.5/ratio1)))
+        canvas_width += final_width_img0
 
-        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[3] + ".jpg"
-        img = Image.open(img_path)
-        w3, h3 = img.size
-        new_img.paste(img, (w0 + w1, 0))
+        img_path = input_path + os.sep + self.keyword + "_" + self.image_type_list[3] + ".jpg"
+        img3 = Image.open(img_path)
+        w3, h3 = img3.size
+        ratio2 = 658/final_width_img3
+        img3 = self.image_resize(img3, size=(int(final_width_img3), int(h3/ratio2)))
+        canvas_width += final_width_img3
+        canvas_width = int(canvas_width)
+        canvas_height = int(h3/ratio2)
 
+        new_img = Image.new('RGB', (canvas_width + self.delta, canvas_height), (255, 255, 255))
+        new_img.paste(img0, (0, 0))
+        new_img.paste(img1, (w0, 0))
+        new_img.paste(img2, (int(final_width_img0), int(h1*0.5/ratio1)))
+        new_img.paste(img3, (int(final_width_img0+final_width_img3), 0))
         # if restriction_max_width and total_width >= restriction_max_width:
         #     ratio = restriction_max_width / float(total_width)
         #     max_height = int(max_height * ratio)
