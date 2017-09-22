@@ -4,7 +4,7 @@
 import wx
 from FileSearching import FileSearching
 from ImgIntegrating import ImageHandler
-
+from Preprocessor import Preprocessor
 
 class UserInterface(wx.Frame):
     """"""
@@ -13,7 +13,6 @@ class UserInterface(wx.Frame):
     def __init__(self):
         """Constructor"""
         wx.Frame.__init__(self, None, -1, u"图片合成", size=(500, 500))
-
         self.panel = wx.Panel(self, -1)
     #     self.initWidgets(self.panel)
     #
@@ -40,38 +39,65 @@ class UserInterface(wx.Frame):
         self.text_no4 = wx.TextCtrl(self.panel, -1, "ddh", size=(175, -1))
         sizer.Add(self.text_no4, pos=(4, 1), flag=wx.ALL, border=5)
 
-        label_file_button = wx.StaticText(self.panel, -1, u"选择图片文件夹：")
-        sizer.Add(label_file_button, pos=(5, 0), flag=wx.ALL, border=5)
-        file_button = wx.Button(self, -1, u"文件夹选择")
-        self.Bind(wx.EVT_BUTTON, self.on_file_choose_button, file_button)
-        sizer.Add(file_button, pos=(5, 1), flag=wx.ALL, border=5)
+        label_file_in_button = wx.StaticText(self.panel, -1, u"选择图片输入文件夹：")
+        sizer.Add(label_file_in_button, pos=(5, 0), flag=wx.ALL, border=5)
+        file_in_button = wx.Button(self, -1, u"文件夹选择")
+        self.Bind(wx.EVT_BUTTON, self.on_dir_input_button, file_in_button)
+        sizer.Add(file_in_button, pos=(5, 1), flag=wx.ALL, border=5)
 
-        label_dir = wx.StaticText(self.panel, -1, u"文件夹路径：")
-        sizer.Add(label_dir, pos=(6, 0), flag=wx.ALL, border=5)
-        self.label_dir_output = wx.StaticText(self.panel, -1, "..................................................................................")
+        label_dir_in = wx.StaticText(self.panel, -1, u"图片输入文件夹路径：")
+        sizer.Add(label_dir_in, pos=(6, 0), flag=wx.ALL, border=5)
+        self.label_dir_input = wx.StaticText(self.panel, -1, " ........"+("          ")*10)
+        self.label_dir_input.Hide()
+        sizer.Add(self.label_dir_input, pos=(6, 1), flag=wx.FULLSCREEN_ALL, border=5)
+
+        label_file_out_button = wx.StaticText(self.panel, -1, u"选择图片输出文件夹：")
+        sizer.Add(label_file_out_button, pos=(7, 0), flag=wx.ALL, border=5)
+        file_out_button = wx.Button(self, -1, u"文件夹选择")
+        self.Bind(wx.EVT_BUTTON, self.on_dir_output_button, file_out_button)
+        sizer.Add(file_out_button, pos=(7, 1), flag=wx.ALL, border=5)
+
+        label_dir_out = wx.StaticText(self.panel, -1, u"图片输出文件夹路径：")
+        sizer.Add(label_dir_out, pos=(8, 0), flag=wx.ALL, border=5)
+        self.label_dir_output = wx.StaticText(self.panel, -1, " ........"+("          ")*10)
         self.label_dir_output.Hide()
-        sizer.Add(self.label_dir_output, pos=(6, 1), flag=wx.FULLSCREEN_ALL, border=5)
+        sizer.Add(self.label_dir_output, pos=(8, 1), flag=wx.FULLSCREEN_ALL, border=5)
 
         self.label_image_group_number_all = wx.StaticText(self.panel, -1)
-        sizer.Add(self.label_image_group_number_all, pos=(7, 0), flag=wx.ALIGN_CENTER, border=5)
+        sizer.Add(self.label_image_group_number_all, pos=(9, 0), flag=wx.ALL, border=5)
         self.label_image_group_number_integrated = wx.StaticText(self.panel, -1)
-        sizer.Add(self.label_image_group_number_integrated, pos=(7, 1), flag=wx.ALIGN_CENTER, border=5)
+        sizer.Add(self.label_image_group_number_integrated, pos=(9, 1), flag=wx.ALL, border=5)
 
         self.integrate_button = wx.Button(self, -1, u"开始合成")
         self.Bind(wx.EVT_BUTTON, self.on_integrate_button, self.integrate_button)
-        sizer.Add(self.integrate_button, pos=(9, 1), flag=wx.ALL, border=5)
+        sizer.Add(self.integrate_button, pos=(10, 1), flag=wx.ALL, border=5)
 
         self.panel.SetSizerAndFit(sizer)
         self.Show()
 
+        self.tag_input_path = False
+        self.tag_output_path = False
+
     # ----------------------------------------------------------------------
-    def on_file_choose_button(self, event):
+    def on_dir_input_button(self, event):
         """"""
-        dlg = wx.DirDialog(self, u"选择文件夹", style=wx.DD_DEFAULT_STYLE)
+        dlg = wx.DirDialog(self, u"选择输入文件夹", style=wx.DD_DEFAULT_STYLE)
+        if dlg.ShowModal() == wx.ID_OK:
+            dir_path = dlg.GetPath()  # file path
+            self.label_dir_input.Show()
+            self.label_dir_input.SetLabel(dir_path)
+            self.tag_input_path = True
+
+        dlg.Destroy()
+
+    def on_dir_output_button(self, event):
+        """"""
+        dlg = wx.DirDialog(self, u"选择输出文件夹", style=wx.DD_DEFAULT_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             dir_path = dlg.GetPath()  # file path
             self.label_dir_output.Show()
             self.label_dir_output.SetLabel(dir_path)
+            self.tag_output_path = True
 
         dlg.Destroy()
 
@@ -79,29 +105,56 @@ class UserInterface(wx.Frame):
         self.label_image_group_number_all.SetLabel(u"图片组数量："+ str(number_all))
 
     def set_img_group_number_integrated(self, number_integrated):
-        self.label_image_group_number_integrated.SetLabel(u"已处理图片组数量："+ str(number_integrated))
+        self.label_image_group_number_integrated.SetLabel(u"待处理图片组数量："+ str(number_integrated))
 
     # def get_dir_path(self):
     #     dir_path = str(self.label_dir_output.GetLabel())
     #     return dir_path
 
 ###############################################################################
+
+    def judge_user_input_or_not(self):
+
+        if self.text_no1.GetValue() is None or self.text_no2.GetValue() is None \
+                or self.text_no3.GetValue() is None or self.text_no4.GetValue() is None:
+            self.label_dir_input.SetLabel(u"文件关键字不能为空" + ("          ") * 5)
+            self.label_dir_input.Show()
+
+        if not self.tag_input_path:
+            self.label_dir_input.SetLabel(u"请选择图片输入文件夹"+("          ")*5)
+            self.label_dir_input.Show()
+            return
+
+        if not self.tag_output_path:
+            self.label_dir_output.SetLabel(u"请选择图片输入文件夹"+("          ")*5)
+            self.label_dir_output.Show()
+            return
+
     def on_integrate_button(self, event):
         '''-----------------------integrating starts---------------------'''
+        event.Skip()
+
+        self.judge_user_input_or_not()
+
+        image_type_list = list()
+        image_type_list.append(self.text_no1.GetValue())
+        image_type_list.append(self.text_no2.GetValue())
+        image_type_list.append(self.text_no3.GetValue())
+        image_type_list.append(self.text_no4.GetValue())
+
+        print image_type_list
+        integrate_handler = Preprocessor(self.label_dir_input.GetLabel(), self.label_dir_output.GetLabel(),
+                                         image_type_list)
+
+        group_number = integrate_handler.get_group_number_all()
+        integrated_number = 0
+        self.set_img_group_number_all(group_number)
+
+        keyword_dict = integrate_handler.get_keyword_dict()
+        for k, v in keyword_dict.iteritems():
+            if integrate_handler.integrate_images(k):
+                integrated_number = integrated_number + 1
+                self.set_img_group_number_integrated(group_number - integrated_number)
 
 
-        print "Clicking on Integrating Button...."
-        target_file_path = self.label_dir_output.GetLabel()
-        print target_file_path
-        file_handle = FileSearching(target_file_path)
-        print file_handle.getFileNumber()
-        print file_handle.calculateTransactionNumber("0011111", ".jpg")
 
-        image_file_list = ["bgh", "sfz_f", "sfz_b", "ddh"]
-        tempImages = ["0011111_bgh.jpg", "0011111_sfz_f.jpg", "0011111_sfz_b.jpg", "0011111_ddh.jpg"]
-        output_path = "/Users/ryan/Documents/ImgIntegration"
-        output_name = "0011111_final.jpg"
-
-        image_handle = ImageHandler(image_file_list)
-        image_handle.init_image_type_dict()
-        print image_handle.image_integrating(target_file_path, tempImages, output_path, output_name, None, None)

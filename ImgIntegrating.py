@@ -5,10 +5,12 @@ from ImageFile import ImageFile
 
 
 class ImageHandler:
-    def __init__(self, image_file_list):
-        self.image_file_list = image_file_list
-        self.image_type_dict = dict()
+    def __init__(self, image_type_list, keyword):
 
+        self.image_type_list = image_type_list
+        self.keyword = keyword
+        self.image_type_dict = dict()
+        self.delta = 100  # border
     # init the image dictionary which contains four types of photos
     def init_image_type_dict(self):
         self.image_type_dict.setdefault("bgh", ImageFile("bgh", (0, 0), (1080, 1920)))       # express number
@@ -26,32 +28,52 @@ class ImageHandler:
             pass
         return img
 
-    def image_integrating(self, targeted_file_path, images, output_path, output_name, \
+    def image_integrating(self, input_path, output_path, output_name, \
                           restriction_max_width = None, restriction_max_height = None):
 
+        canvas_width = 0
+        canvas_height = 0
+        mid_width = 0
         # calculating the max height of the final image
-        # for imgName in images:
-        #     img_path = targeted_file_path + '/' + imgName
-        #     if os.path.exists(img_path):
-        #         image = Image.open(img_path)
-        #         width, height = image.size
-        #         if height > max_height:
-        #             max_height = height
-        #         total_width += width
+        for image_type in self.image_type_list:
+            img_path = input_path + '/' + self.keyword + "_"+image_type+".jpg"
+            if os.path.exists(img_path):
+                image = Image.open(img_path)
+                width, height = image.size
+                if image_type == self.image_type_list[0]:
+                    canvas_height = height
+                    canvas_width += width
+                elif image_type == self.image_type_list[1] or image_type == self.image_type_list[2]:
+                    if mid_width < width:
+                        mid_width = width
+                elif image_type == self.image_type_list[3]:
+                    canvas_width += width
+        canvas_width += mid_width
 
         # creating a new image
         # new_img = Image.new('RGB', (total_width, max_height), 255)
-        new_img = Image.new('RGB', (3866, 1920), 255)
+        new_img = Image.new('RGB', (canvas_width + self.delta, canvas_height), (255,255,255))
 
         # integrating the images
-        for imgName in images:
-            img_path = targeted_file_path + '/' + imgName
-            if os.path.exists(img_path):
-                img = Image.open(img_path)
-                for index in self.image_type_dict:
-                    if imgName.find(index) != -1:
-                        image_file = self.image_type_dict.get(index, None)
-                        new_img.paste(img.resize(image_file.get_size()), image_file.get_ordination())
+        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[0] + ".jpg"
+        img = Image.open(img_path)
+        w0, h0 = img.size
+        new_img.paste(img, (0, 0))
+
+        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[1] + ".jpg"
+        img = Image.open(img_path)
+        w1, h1 = img.size
+        new_img.paste(img, (w0, 0))
+
+        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[2] + ".jpg"
+        img = Image.open(img_path)
+        w2, h2 = img.size
+        new_img.paste(img, (w0, h1))
+
+        img_path = input_path + '/' + self.keyword + "_" + self.image_type_list[3] + ".jpg"
+        img = Image.open(img_path)
+        w3, h3 = img.size
+        new_img.paste(img, (w0 + w1, 0))
 
         # if restriction_max_width and total_width >= restriction_max_width:
         #     ratio = restriction_max_width / float(total_width)
@@ -68,8 +90,8 @@ class ImageHandler:
         if not os.path.exists(output_path):
             os.makedirs(output_path)
         save_path = '%s/%s' % (output_path, output_name)
-        new_img.save(save_path)
-        return save_path
+        return new_img.save(save_path) is None
+
 
 
 
