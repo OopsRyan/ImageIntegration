@@ -46,13 +46,13 @@ class ImageHandler:
         img1 = Image.open(img_path)
         w1, h1 = img1.size
         ratio1 = 600/final_width_img1
-        img1 = self.image_resize(img1, size=(int(final_width_img1), int(h1*0.5/ratio1)))
+        img1 = self.image_resize(img1, size=(int(final_width_img1), int(h1/ratio1)))
 
         img_path = input_path + os.sep + self.keyword + "_" + self.image_type_list[2] + ".jpg"
         img2 = Image.open(img_path)
         w2, h2 = img2.size
         # ratio = int(600/480)
-        img2 = self.image_resize(img2, size=(int(final_width_img1), int(h2*0.5/ratio1)))
+        img2 = self.image_resize(img2, size=(int(final_width_img1), int(h2/ratio1)))
         canvas_width += final_width_img0
 
         img_path = input_path + os.sep + self.keyword + "_" + self.image_type_list[3] + ".jpg"
@@ -67,8 +67,8 @@ class ImageHandler:
         new_img = Image.new('RGB', (canvas_width + self.delta, canvas_height), (255, 255, 255))
         new_img.paste(img0, (0, 0))
         new_img.paste(img1, (w0, 0))
-        new_img.paste(img2, (int(final_width_img0), int(h1*0.5/ratio1)))
-        new_img.paste(img3, (int(final_width_img0+final_width_img3), 0))
+        new_img.paste(img2, (int(final_width_img0), int(h1/ratio1)))
+        new_img.paste(img3, (int(final_width_img0+final_width_img1), 0))
         # if restriction_max_width and total_width >= restriction_max_width:
         #     ratio = restriction_max_width / float(total_width)
         #     max_height = int(max_height * ratio)
