@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding= utf-8
 import os
 from PIL import Image
 
@@ -85,10 +85,3 @@ class ImageHandler:
             os.makedirs(output_path)
         save_path = '%s/%s' % (output_path, output_name)
         return new_img.save(save_path) is None
-
-
-
-
-
-
-

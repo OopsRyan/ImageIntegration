@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding= utf-8
 from FileSearching import FileSearching
 from ImgIntegrating import ImageHandler
 
