@@ -16,8 +16,8 @@ class CSVParser:
         return data_dict
 
 
-csvObject = CSVParser("aa")
-dict = csvObject.get_dict_from_csv()
-print len(dict)
+# csvObject = CSVParser("aa")
+# dict = csvObject.get_dict_from_csv()
+# print len(dict)
 
 

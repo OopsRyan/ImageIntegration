@@ -3,7 +3,7 @@ from Tkinter import *
 import tkFileDialog
 import tkMessageBox
 from Preprocessor import Preprocessor
-
+from CSVParser import CSVParser
 
 class UserInterface:
 
@@ -68,11 +68,11 @@ class UserInterface:
         self.frm_M6.pack()
 
         Label(self.frm_M1, text=u'image path:', font=('Arial', 12)).pack(side=LEFT)
-        self.text_input_path = StringVar()
-        Label(self.frm_M1, textvariable=self.text_input_path, font=('Arial', 12)).pack(side=RIGHT)
+        self.image_input_path = StringVar()
+        Label(self.frm_M1, textvariable=self.image_input_path, font=('Arial', 12)).pack(side=RIGHT)
         self.frm_M1.pack()
 
-        Button(self.frm_M2, text=u"choose", command=self.input_button_click, width=15, height=2,
+        Button(self.frm_M2, text=u"choose", command=self.image_input_button_click, width=15, height=2,
                font=('Arial', 10)).pack(side=LEFT)
         self.frm_M2.pack()
 
@@ -93,11 +93,11 @@ class UserInterface:
 
         self.img_group_number = StringVar()
         Label(self.frm_B, textvariable=self.img_group_number, font=('Arial', 15)).pack(side=TOP)
-        Button(self.frm_BT, text="start".decode('gbk').encode('utf-8'), command=self.integrate_images, width=10, height=2,
+        Button(self.frm_BT, text="start", command=self.integrate_images, width=10, height=2,
                font=('Arial', 15)).pack(side=BOTTOM)
         self.frm_BT.pack(side=TOP)
 
-        self.t_show = Text(self.frm_B, width=20, height=5, font=('Verdana', 15))
+        self.t_show = Text(self.frm_B, width=45, height=5, font=('Verdana', 15))
         self.t_show.pack()
 
         self.frm_B.pack(side=BOTTOM)
@@ -106,17 +106,16 @@ class UserInterface:
         ########
 
     def csv_input_button_click(self):
-        filename = tkFileDialog.askopenfile()
-        print filename
-        self.csv_input_path.set(filename)
+        file_path = tkFileDialog.askopenfilename()
+        self.csv_input_path.set(file_path)
 
-    def input_button_click(self):
-        filename = tkFileDialog.askdirectory()
-        self.text_input_path.set(filename)
+    def image_input_button_click(self):
+        file_path = tkFileDialog.askdirectory()
+        self.image_input_path.set(file_path)
 
     def output_button_click(self):
-        filename = tkFileDialog.askdirectory()
-        self.text_output_path.set(filename)
+        file_path = tkFileDialog.askdirectory()
+        self.text_output_path.set(file_path)
 
     def judge_user_input_or_not(self):
         alert_message = StringVar()
@@ -124,7 +123,7 @@ class UserInterface:
         #         or len(self.var_char3.get()) == 0 or len(self.var_char4.get()) == 0:
         #     alert_message.set(u"������ͼƬ�ؼ���!\n")
 
-        if len(self.text_input_path.get()) == 0:
+        if len(self.image_input_path.get()) == 0:
             alert_message.set(alert_message.get() + u"input path is empty!\n")
 
         if len(self.text_output_path.get()) == 0:
@@ -143,18 +142,19 @@ class UserInterface:
         # image_type_list.append(self.var_char3.get())
         # image_type_list.append(self.var_char4.get())
 
-        integrate_handler = Preprocessor(self.text_input_path.get(), self.text_output_path.get(),
-                                         image_type_list)
+        csv_handler = CSVParser(self.csv_input_path.get())
+        data_dict = csv_handler.get_dict_from_csv()
+        integrate_handler = Preprocessor(self.image_input_path.get(), self.text_output_path.get())
 
-        group_number = integrate_handler.get_group_number_all()
-        self.img_group_number.set(u"Total number: "+str(group_number)+u" groups")
-        integrated_number = 0
+        # group_number = integrate_handler.get_group_number_all()
 
-        keyword_dict = integrate_handler.get_keyword_dict()
-        for k, v in keyword_dict.iteritems():
-            if integrate_handler.integrate_images(k):
-                integrated_number += 1
-                self.t_show.insert(END, u"No. "+str(integrated_number)+u" has been finished!\n")
+        self.img_group_number.set(u"Total number: "+str(len(data_dict))+u" groups")
+
+        # keyword_dict = integrate_handler.get_keyword_dict()
+        for k, v in data_dict.iteritems():
+            return_message = integrate_handler.integrate_images(v)
+            if len(return_message) > 0:
+                self.t_show.insert(END, u"Ref no. " + return_message + u" has not been finished!\n")
 
 
 if __name__ == "__main__":
