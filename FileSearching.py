@@ -5,7 +5,7 @@ import os
 class FileSearching:
     """A class for searching files.
     However, you cannot understander this file! I am sure.
-    You would be confusing, if you keep going on."""
+    You would be confused, if you keep going on."""
 
     def __init__(self, targeted_file_path, suffix, image_type_list):
         ''' suffix - .jpg
